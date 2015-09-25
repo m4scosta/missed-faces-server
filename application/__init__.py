@@ -8,6 +8,7 @@ from flask import g
 from application.apps.recognition.service import RecognitionService
 from .assets import register_assets
 from .blueprints import register_blueprints
+from .tasks import setup_celery
 
 
 class Application(Flask):
@@ -29,6 +30,9 @@ app = Application(__name__)
 
 # create database
 db = MongoEngine(app)
+
+# task queue setup
+celery = setup_celery(app)
 
 
 register_assets(app)

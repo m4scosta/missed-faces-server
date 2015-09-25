@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import jsonify
 from flask import request
+from application.apps.recognition.task import RecognitionTask
 
 from .models import MissedPerson
 
@@ -17,6 +18,7 @@ def create_person():
 
 @person_mod.route("/list", methods=['GET'])
 def list_person():
+    RecognitionTask().delay()
     return jsonify(persons=MissedPerson.objects.all())
 
 

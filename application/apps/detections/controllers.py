@@ -3,6 +3,8 @@ from flask import jsonify
 from flask import request
 
 from application.apps.detections.models import Detection
+from application.apps.real_time.tasks import NotificationTask
+from application.apps.recognition.task import RecognitionTask
 
 detection_mod = Blueprint('detection', __name__, url_prefix='/detection')
 
@@ -12,11 +14,15 @@ def create_detection():
     detection_data = request.get_json()
     detection = Detection(**detection_data)
     detection.save()
+
+    # RecognitionTask.delay(link=NotificationTask.s())
+
     return jsonify(detection=detection)
 
 
 @detection_mod.route("/list", methods=['GET'])
 def list_detection():
+    RecognitionTask().apply_async((None, ), link=NotificationTask().s())
     return jsonify(detections=Detection.objects.all())
 
 

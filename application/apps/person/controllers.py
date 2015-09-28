@@ -1,8 +1,9 @@
 from flask import Blueprint
 from flask import jsonify
-from flask import request
-from application.apps.recognition.task import RecognitionTask
 
+from flask import request
+
+from application.apps.recognition.task import TrainingTask
 from .models import MissedPerson
 
 person_mod = Blueprint('person', __name__, url_prefix='/person')
@@ -13,12 +14,14 @@ def create_person():
     person_data = request.get_json()
     person = MissedPerson(**person_data)
     person.save()
+
+    TrainingTask().apply_async((person, ))
+
     return jsonify(person=person)
 
 
 @person_mod.route("/list", methods=['GET'])
 def list_person():
-    RecognitionTask().delay()
     return jsonify(persons=MissedPerson.objects.all())
 
 

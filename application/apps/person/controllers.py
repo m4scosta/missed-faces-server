@@ -1,37 +1,52 @@
-from flask import Blueprint
+from flask import Blueprint, redirect
 from flask import jsonify
-
 from flask import request
+from flask.templating import render_template
 
+from application.apps.person.forms import MissedPersonForm
+from application.apps.person.models import MissedPersonImage
 from application.apps.recognition.task import TrainingTask
 from .models import MissedPerson
 
 person_mod = Blueprint('person', __name__, url_prefix='/person')
 
 
-@person_mod.route("", methods=['POST'])
+@person_mod.route("/", methods=['GET'])
+def person_form():
+    form = MissedPersonForm(csrf_enabled=False)
+    return render_template("person/create.html", form=form)
+
+
+@person_mod.route("/", methods=['POST'])
 def create_person():
-    person_data = request.get_json()
-    person = MissedPerson(**person_data)
-    person.save()
+    form = MissedPersonForm(csrf_enabled=False)
 
-    TrainingTask().apply_async((person, ))
+    if form.validate_on_submit():
+        files = request.files.getlist('images')
+        person = MissedPerson(**form.data)
+        person.images = [MissedPersonImage(image=img) for img in files]
 
-    return jsonify(person=person)
+        person.save()
+
+        TrainingTask().apply_async((person, ))
+
+        return redirect('/person/')
+
+    return render_template("person/create.html", form=form)
 
 
-@person_mod.route("/list", methods=['GET'])
+@person_mod.route("/list/", methods=['GET'])
 def list_person():
     return jsonify(persons=MissedPerson.objects.all())
 
 
-@person_mod.route("/<string:person_id>", methods=['GET'])
+@person_mod.route("/<string:person_id>/", methods=['GET'])
 def get_person(person_id):
     p = MissedPerson.objects.get_or_404(id=person_id).delete()
     return jsonify(person=p)
 
 
-@person_mod.route("/<string:person_id>", methods=['DELETE'])
+@person_mod.route("/<string:person_id>/", methods=['DELETE'])
 def delete_person(person_id):
     person = MissedPerson.objects.get_or_404(id=person_id)
     person.delete()

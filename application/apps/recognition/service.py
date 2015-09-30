@@ -4,13 +4,16 @@ import cv2
 class RecognitionService(object):
 
     def __init__(self):
-        self.recognizer = cv2.createEigenFaceRecognizer(threshold=10000)
+        self.recognizer = cv2.createLBPHFaceRecognizer(threshold=10000)
 
     def train(self, images, labels):
         self.recognizer.train(images, labels)
 
     def recognize(self, image):
         return self.recognizer.predict(image)
+
+    def update_training(self, images, labels):
+        self.recognizer.update(images, labels)
 
 
 # if __name__ == '__main__':

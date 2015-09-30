@@ -22,4 +22,5 @@ class TrainingTask(BaseTask):
         self.train_recognizer(missed_person)
 
     def train_recognizer(self, missed_person):
-        pass
+        print(missed_person.images)
+        # self.recognition_service.update_training()

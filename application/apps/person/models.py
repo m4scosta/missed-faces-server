@@ -6,7 +6,7 @@ from application.apps.base.models import BaseDocument
 
 
 class MissedPersonImage(EmbeddedDocument):
-    image = fields.ImageField(required=True)
+    image = fields.ImageField(size=(100, 100), required=True)
 
 
 class MissedPerson(BaseDocument):
@@ -14,6 +14,7 @@ class MissedPerson(BaseDocument):
     born_date = fields.DateTimeField()
     missed_date = fields.DateTimeField(required=True)
     images = fields.EmbeddedDocumentListField(MissedPersonImage)
+    counter = fields.SequenceField()
 
     def get_absolute_url(self):
         return url_for('person', kwargs={'person_id': self.id})

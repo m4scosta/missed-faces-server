@@ -14,6 +14,7 @@ class RecognitionService(object):
 
     def update_training(self, images, labels):
         self.recognizer.update(images, labels)
+        print "recognizer updated"
 
 
 # if __name__ == '__main__':

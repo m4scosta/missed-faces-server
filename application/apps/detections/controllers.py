@@ -1,12 +1,11 @@
 import base64
-from datetime import datetime
 import StringIO
 
+from datetime import datetime
 from PIL import Image
-import numpy as np
+
 from flask import Blueprint
 from flask import jsonify
-
 from flask import request
 
 from application.apps.detections.models import Detection
@@ -19,10 +18,6 @@ def load_pil_image(face):
     size = (face['width'], face['height'])
     decoded_bytes = base64.b64decode(face['face'])
     return Image.frombytes("RGB", size, decoded_bytes)
-
-def load_cv_image(face):
-    img = load_pil_image(face).convert("L")
-    return np.asarray(img)
 
 def load_io_image(face):
     output = StringIO.StringIO()

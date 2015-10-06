@@ -42,8 +42,7 @@ def list_person():
 
 @person_mod.route("/<string:person_id>/", methods=['GET'])
 def get_person(person_id):
-    p = MissedPerson.objects.get_or_404(id=person_id).delete()
-    return jsonify(person=p)
+    return jsonify(person=MissedPerson.objects.get_or_404(id=person_id))
 
 
 @person_mod.route("/<string:person_id>/", methods=['DELETE'])

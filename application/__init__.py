@@ -5,10 +5,11 @@ from flask.ext.mongoengine import MongoEngine
 
 from flask import g
 
-from application.apps.recognition.service import RecognitionService
+from .apps.recognition.service import RecognitionService
 from .assets import register_assets
 from .blueprints import register_blueprints
 from .tasks import setup_celery
+from .apps.person.util import train_recognizer_with_registered_persons
 
 
 class Application(Flask):
@@ -37,6 +38,7 @@ celery = setup_celery(app)
 
 register_assets(app)
 register_blueprints(app)
+train_recognizer_with_registered_persons()
 
 
 @app.errorhandler(404)

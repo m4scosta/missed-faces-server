@@ -33,7 +33,7 @@ def create_detection():
 
     faces = [load_io_image(face) for face in detection_data['faces']]
     detection = Detection(time=datetime.fromtimestamp(detection_data['time'] / 1e3), face=faces[0])
-    detection.save()
+    # detection.save()
 
     RecognitionTask().apply_async((detection, ), link=NotificationTask().s())
 

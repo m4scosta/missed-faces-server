@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 
 from flask.ext.login import LoginManager
+from flask.ext.mail import Mail
 
 from flask.ext.mongoengine import MongoEngine
 
@@ -36,6 +37,9 @@ db = MongoEngine(app)
 
 # task queue setup
 celery = setup_celery(app)
+
+# mail
+mail = Mail(app)
 
 # auth
 login_manager = LoginManager()

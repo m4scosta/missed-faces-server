@@ -1,8 +1,49 @@
+from flask.ext.mail import Message
+import requests
+from flask.json import jsonify
+from mongoengine import fields
+from application import mail
+
 from application.apps.auth.models import User
 from application.apps.base.models import BaseDocument
-from mongoengine import fields
 
 __author__ = 'marcos'
+
+
+class Notifier(object):
+
+    def __init__(self, target):
+        self.target = target
+
+    def notify(self, target):
+        raise NotImplementedError()
+
+
+class EmailNotifier(Notifier):
+
+    def notify(self, detection):
+        print("sending email notification")
+
+        msg = Message(subject="Pessoa encontrada",
+                      recipients=[self.target],
+                      body=self.build_message_body(detection))
+
+        mail.send(msg)
+
+    @staticmethod
+    def build_message_body(detection):
+        return "OI"
+
+
+
+class URLPostNotifier(Notifier):
+
+    def notify(self, detection):
+        print("sending URL post notification")
+        response = requests.post(self.target, data=jsonify(detection=detection))
+
+        if response.status_code != 200:
+            print("Post notification of detection %s, to URL %s failed" %(detection.id, self.target))
 
 
 class NotificationMethod(BaseDocument):
@@ -13,3 +54,10 @@ class NotificationMethod(BaseDocument):
     meta = {
         'ordering': ['notification_type', 'created_at']
     }
+
+    def get_notifier(self):
+        if self.notification_type == "email":
+            return EmailNotifier(target=self.target)
+        elif self.notification_type == "post":
+            return URLPostNotifier(target=self.target)
+        return Notifier(target=self.target)

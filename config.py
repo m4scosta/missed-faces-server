@@ -19,3 +19,14 @@ CELERY_RESULT_BACKEND='redis://localhost:6379'
 
 # DATABASE
 MONGODB_SETTINGS = {'DB': 'missed_faces'}
+
+
+# EMAIL
+# MAIL_SERVER : default ‘localhost’
+# MAIL_PORT : default 25
+# MAIL_USE_TLS : default False
+# MAIL_USE_SSL : default False
+# MAIL_DEBUG : default app.debug
+# MAIL_USERNAME : default None
+# MAIL_PASSWORD : default None
+DEFAULT_MAIL_SENDER = "missedfaces@noreply.com"

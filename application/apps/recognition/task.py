@@ -15,7 +15,14 @@ class BaseTask(celery.Task):
 class RecognitionTask(BaseTask):
 
     def run(self, detection):
-        return self.call_recognizer(detection)
+        person = self.call_recognizer(detection)
+
+        if person is not None:
+            detection.person = person
+            detection.save()
+            return detection
+
+        return None
 
     def call_recognizer(self, detection):
         image = read_image_as_np_array(detection.face)

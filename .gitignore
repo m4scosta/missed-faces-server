@@ -3,3 +3,5 @@
 *.log
 
 .idea
+
+application/static/.webassets-cache/

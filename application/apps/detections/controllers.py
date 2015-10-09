@@ -9,7 +9,7 @@ from flask import jsonify
 from flask import request
 
 from application.apps.detections.models import Detection
-from application.apps.real_time.tasks import NotificationTask
+from application.apps.notifications.tasks import NotificationTask
 from application.apps.recognition.task import RecognitionTask
 
 detection_mod = Blueprint('detection', __name__, url_prefix='/detection')

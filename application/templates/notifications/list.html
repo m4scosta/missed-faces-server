@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Missed Faces</title>
+</head>
+<body>
+
+<ul>
+    {% for method in notification_methods %}
+        <li>
+            {% if method.notification_type == "email" %}
+                E-mail para {{ method.target }}
+            {% else %}
+                Post na URL {{ method.target }}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+<div>
+    <a href="./nova">Adicionar método de notificação</a>
+</div>
+
+</body>
+</html>

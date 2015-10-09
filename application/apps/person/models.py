@@ -1,6 +1,7 @@
 from mongoengine import fields
 from flask.helpers import url_for
 from mongoengine.document import EmbeddedDocument
+from application.apps.auth.models import User
 
 from application.apps.base.models import BaseDocument
 
@@ -10,6 +11,7 @@ class MissedPersonImage(EmbeddedDocument):
 
 
 class MissedPerson(BaseDocument):
+    user = fields.ReferenceField(User, required=True)
     name = fields.StringField(max_length=255, required=True)
     born_date = fields.DateTimeField()
     missed_date = fields.DateTimeField(required=True)

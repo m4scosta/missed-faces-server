@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import render_template
 
+from flask.ext.login import LoginManager
+
 from flask.ext.mongoengine import MongoEngine
 
 from flask import g
@@ -35,6 +37,10 @@ db = MongoEngine(app)
 # task queue setup
 celery = setup_celery(app)
 
+# auth
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+login_manager.init_app(app)
 
 register_assets(app)
 register_blueprints(app)

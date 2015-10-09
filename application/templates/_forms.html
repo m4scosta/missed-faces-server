@@ -1,30 +1,32 @@
 {% macro render(form) -%}
-    <fieldset>
-        {% for field in form %}
-            {% if field.type in ['CSRFTokenField', 'HiddenField'] %}
-                {{ field() }}
-            {% else %}
-                <div class="clearfix {% if field.errors %}error{% endif %}">
-                    {{ field.label }}
-                    <div class="input">
-                        {% if field.name == "body" %}
-                            {{ field(rows=10, cols=40) }}
-                        {% else %}
-                            {{ field() }}
-                        {% endif %}
+    {% for error in form.errors.__all__ %}
+        <div>{{ error }}</div>
+    {% endfor %}
 
-                        {% if field.errors or field.help_text %}
-                            <span class="help-inline">
+    {% for field in form %}
+        {% if field.type in ['CSRFTokenField', 'HiddenField'] %}
+            {{ field() }}
+        {% elif field.type != "FileField" %}
+            <div class="clearfix {% if field.errors %}error{% endif %}">
+                {{ field.label }}
+                <div class="input">
+                    {% if field.type == "DateField" %}
+                        {{ field(type="date") }}
+                    {% else %}
+                        {{ field() }}
+                    {% endif %}
+
+                    {% if field.errors or field.help_text %}
+                        <span class="help-inline">
                         {% if field.errors %}
                             {{ field.errors|join(' ') }}
                         {% else %}
                             {{ field.help_text }}
                         {% endif %}
                             </span>
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 </div>
-            {% endif %}
-        {% endfor %}
-    </fieldset>
+            </div>
+        {% endif %}
+    {% endfor %}
 {% endmacro %}

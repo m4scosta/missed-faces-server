@@ -1,6 +1,8 @@
 from flask import Blueprint, redirect
 from flask import jsonify
 from flask import request
+from flask.ext.login import current_user, login_required
+from flask.helpers import url_for
 from flask.templating import render_template
 
 from application.apps.person.forms import MissedPersonForm
@@ -8,44 +10,43 @@ from application.apps.person.models import MissedPersonImage
 from application.apps.recognition.task import TrainingTask
 from .models import MissedPerson
 
-person_mod = Blueprint('person', __name__, url_prefix='/person')
+person_mod = Blueprint('person', __name__, url_prefix='/desaparecidos')
 
 
-@person_mod.route("/", methods=['GET'])
-def person_form():
-    form = MissedPersonForm(csrf_enabled=False)
-    return render_template("person/create.html", form=form)
+@person_mod.route("/novo", methods=['GET', 'POST'])
+@login_required
+def new_person():
+    form = MissedPersonForm()
 
-
-@person_mod.route("/", methods=['POST'])
-def create_person():
-    form = MissedPersonForm(csrf_enabled=False)
-
-    if form.validate_on_submit():
+    if request.method == "POST" and form.validate_on_submit():
         files = request.files.getlist('images')
-        person = MissedPerson(**form.data)
+        person = MissedPerson(user=current_user.id)
+        form.populate_obj(person)
         person.images = [MissedPersonImage(image=img) for img in files]
 
         person.save()
 
         TrainingTask().apply_async((person, ))
 
-        return redirect('/person/')
+        return redirect(url_for("person.list_person"))
 
     return render_template("person/create.html", form=form)
 
 
 @person_mod.route("/list/", methods=['GET'])
+@login_required
 def list_person():
-    return jsonify(persons=MissedPerson.objects.all())
+    return jsonify(persons=MissedPerson.objects(user=current_user.id))
 
 
 @person_mod.route("/<string:person_id>/", methods=['GET'])
+@login_required
 def get_person(person_id):
     return jsonify(person=MissedPerson.objects.get_or_404(id=person_id))
 
 
 @person_mod.route("/<string:person_id>/", methods=['DELETE'])
+@login_required
 def delete_person(person_id):
     person = MissedPerson.objects.get_or_404(id=person_id)
     person.delete()

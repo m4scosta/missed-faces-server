@@ -1,0 +1,18 @@
+{% import '_forms.html' as forms %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Missed Faces</title>
+</head>
+<body>
+
+<div>
+    <form action="{{ request.url }}" method="POST">
+        {{ forms.render(form) }}
+        <input type="submit" value="Adicionar"/>
+    </form>
+</div>
+
+</body>
+</html>

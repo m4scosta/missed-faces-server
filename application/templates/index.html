@@ -9,5 +9,19 @@
 </head>
 <body>
 
+{% if current_user %}
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+    <br/>
+{% endif %}
+
+<a href="{{ url_for('person.new_person') }}">Desaparecidos</a>
+<br/>
+
+<a href="#">Encontrados</a>
+<br/>
+
+<a href="{{ url_for('notifications.list_notification_methods') }}">Métodos de notificação</a>
+<br/>
+
 </body>
 </html>

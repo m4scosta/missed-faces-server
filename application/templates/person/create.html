@@ -7,6 +7,10 @@
 </head>
 <body>
 
+<a href="{{ url_for("index") }}">Home</a>
+<br/>
+<br/>
+
 <form action="{{ request.path }}" method="POST" enctype="multipart/form-data">
     {{ forms.render(form) }}
     <div>

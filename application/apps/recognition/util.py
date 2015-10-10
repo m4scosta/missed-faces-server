@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-
+from application.apps.recognition.preprocessing import PreProcessingQueue
 
 __author__ = 'marcos'
 
@@ -29,8 +29,11 @@ def person_image_list_to_np_array(labels_and_images):
     for label, images in labels_and_images:
         for image in images:
             np_image = read_image_as_np_array(image.image)
+            processed_image = PreProcessingQueue().process(np_image)
+
+            cv2.imwrite("/home/marcos/%d.jpg" % label, processed_image)
 
             labels.append(label)
-            np_images.append(np_image)
+            np_images.append(processed_image)
 
     return np.asarray(labels), np.asarray(np_images)

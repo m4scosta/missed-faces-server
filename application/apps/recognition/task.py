@@ -1,15 +1,23 @@
-import cv2
-
 import numpy as np
 
 from application import celery
 from application.apps.person.models import MissedPerson
+from application.apps.recognition.preprocessing import PreProcessingQueue
 from .service import RecognitionService
 from .util import read_image_as_np_array
 
 
 class BaseTask(celery.Task):
     recognition_service = RecognitionService()
+
+    def convert_image_to_np(self, detection):
+        image = read_image_as_np_array(detection.face)
+        pre_processed = self.pre_process(image)
+        return pre_processed
+
+    @staticmethod
+    def pre_process(image):
+        return PreProcessingQueue().process(image)
 
 
 class RecognitionTask(BaseTask):
@@ -25,7 +33,7 @@ class RecognitionTask(BaseTask):
         return None
 
     def call_recognizer(self, detection):
-        image = read_image_as_np_array(detection.face)
+        image = self.convert_image_to_np(detection)
         label, confidence = self.recognition_service.recognize(image)
 
         if label < 0:
@@ -41,7 +49,8 @@ class TrainingTask(BaseTask):
         return missed_person
 
     def train_recognizer(self, missed_person):
-        images = np.asarray(map(read_image_as_np_array, missed_person.images))
+        raw_images = map(read_image_as_np_array, missed_person.images)
+        images = np.asarray([self.pre_process(img) for img in raw_images])
         labels = np.asarray([missed_person.counter] * len(missed_person.images))
 
         self.recognition_service.update_training(images, labels)

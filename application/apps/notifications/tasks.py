@@ -8,6 +8,8 @@ class NotificationTask(celery.Task):
         if detection is None:
             return None
 
+        print(detection.person.name)
+
         self.detection = detection
         methods = NotificationMethod.objects(user=detection.person.user)
 

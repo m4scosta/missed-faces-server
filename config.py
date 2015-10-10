@@ -13,8 +13,8 @@ SECRET_KEY = "),rowPbh;49Q1q1nYL4.hLS4I1e9r97D83oi]%N7^1K{mUw'5|bw8wQ2^h2;4Uk"
 
 
 # TASK QUEUE
-CELERY_BROKER_URL='redis://localhost:6379',
-CELERY_RESULT_BACKEND='redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://localhost:6379',
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
 
 # DATABASE
@@ -22,11 +22,11 @@ MONGODB_SETTINGS = {'DB': 'missed_faces'}
 
 
 # EMAIL
-# MAIL_SERVER : default ‘localhost’
-# MAIL_PORT : default 25
-# MAIL_USE_TLS : default False
-# MAIL_USE_SSL : default False
+MAIL_SERVER = "smtp.live.com"
+MAIL_PORT = 465
+# MAIL_USE_TLS = True
+MAIL_USE_SSL = True
 # MAIL_DEBUG : default app.debug
-# MAIL_USERNAME : default None
-# MAIL_PASSWORD : default None
+MAIL_USERNAME = "kbca-sjc@hotmail.com"
+MAIL_PASSWORD = "m1a2r3c4o5s5"
 DEFAULT_MAIL_SENDER = "missedfaces@noreply.com"

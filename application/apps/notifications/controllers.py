@@ -29,3 +29,10 @@ def new():
 def list_notification_methods():
     methods = NotificationMethod.objects(user=current_user.id)
     return render_template("notifications/list.html", notification_methods=methods)
+
+
+@notifications_mod.route("/delete/<string:notification_id>", methods=["GET"])
+def delete(notification_id):
+    notification = NotificationMethod.objects.get_or_404(id=notification_id)
+    notification.delete()
+    return redirect(url_for("notifications.list_notification_methods"))

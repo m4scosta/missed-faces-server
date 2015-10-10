@@ -7,6 +7,6 @@ def train_recognizer_with_registered_persons():
     from application.apps.recognition.util import person_image_list_to_np_array
 
     labels_and_images = MissedPerson.objects.values_list('counter', 'images')
-    labels, images = person_image_list_to_np_array(labels_and_images)
-
-    RecognitionService.get_instance().train(images, labels)
+    if labels_and_images:
+        labels, images = person_image_list_to_np_array(labels_and_images)
+        RecognitionService.get_instance().train(images, labels)

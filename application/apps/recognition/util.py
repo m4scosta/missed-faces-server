@@ -18,6 +18,7 @@ def read_image_as_np_array(image):
     data = image.read()
     temp_file = create_temp_file(data)
     img = cv2.imread(temp_file, cv2.IMREAD_GRAYSCALE)
+    img = cv2.equalizeHist(img)
     return cv2.resize(img, (100, 100))
 
 

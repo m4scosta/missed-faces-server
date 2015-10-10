@@ -1,9 +1,8 @@
 from flask.ext.mail import Message
 import requests
-from flask.json import jsonify
 from mongoengine import fields
-from application import mail
 
+from application import mail
 from application.apps.auth.models import User
 from application.apps.base.models import BaseDocument
 
@@ -40,7 +39,7 @@ class URLPostNotifier(Notifier):
 
     def notify(self, detection):
         print("sending URL post notification")
-        response = requests.post(self.target, data=jsonify(detection=detection))
+        response = requests.post(self.target, data={"name": detection.person.name})
 
         if response.status_code != 200:
             print("Post notification of detection %s, to URL %s failed" %(detection.id, self.target))

@@ -18,6 +18,8 @@
             {% else %}
                 Post na URL {{ method.target }}
             {% endif %}
+
+            <a href="{{ url_for("notifications.delete", notification_id=method.id) }}">Deletar</a>
         </li>
     {% endfor %}
 </ul>

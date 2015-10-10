@@ -18,7 +18,7 @@ class RecognitionService(object):
         return cls()
 
     def __init__(self):
-        self.recognizer = cv2.createEigenFaceRecognizer(threshold=8000)
+        self.recognizer = cv2.createEigenFaceRecognizer(threshold=1000)
 
     def train(self, images, labels):
         self.recognizer.train(images, labels)

@@ -7,6 +7,7 @@ from flask.ext.mail import Mail
 from flask.ext.mongoengine import MongoEngine
 
 from flask import g
+from flask.globals import request
 
 from .apps.recognition.service import RecognitionService
 from .assets import register_assets
@@ -59,3 +60,10 @@ def not_found(error):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/", methods=['POST'])
+def test():
+    print request.form
+    return "OK"
+

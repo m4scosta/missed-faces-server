@@ -31,8 +31,6 @@ def person_image_list_to_np_array(labels_and_images):
             np_image = read_image_as_np_array(image.image)
             processed_image = PreProcessingQueue().process(np_image)
 
-            cv2.imwrite("/home/marcos/%d.jpg" % label, processed_image)
-
             labels.append(label)
             np_images.append(processed_image)
 

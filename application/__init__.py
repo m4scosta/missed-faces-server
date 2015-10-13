@@ -1,14 +1,10 @@
 from flask import Flask
 from flask import render_template
-
 from flask.ext.login import LoginManager
-from flask.ext.mail import Mail
-
 from flask.ext.mongoengine import MongoEngine
+import sendgrid
 
-from flask import g
-from flask.globals import request
-
+from application.email import SendGridMail
 from .apps.recognition.service import RecognitionService
 from .assets import register_assets
 from .blueprints import register_blueprints
@@ -16,22 +12,9 @@ from .tasks import setup_celery
 from .apps.person.util import train_recognizer_with_registered_persons
 
 
-class Application(Flask):
-
-    def __init__(self, *args, **kwargs):
-        super(Application, self).__init__(*args, **kwargs)
-        self.config.from_object('config')
-
-    def get_recognizer(self):
-        recognizer = getattr(g, '_recognizer', None)
-
-        if recognizer is None:
-            recognizer = g._recognizer = RecognitionService()
-
-        return recognizer
-
 # instantiate application
-app = Application(__name__)
+app = Flask(__name__)
+app.config.from_object('config')
 
 # create database
 db = MongoEngine(app)
@@ -40,7 +23,7 @@ db = MongoEngine(app)
 celery = setup_celery(app)
 
 # mail
-mail = Mail(app)
+sg = SendGridMail(app)
 
 # auth
 login_manager = LoginManager()
@@ -60,10 +43,3 @@ def not_found(error):
 @app.route("/")
 def index():
     return render_template("index.html")
-
-
-@app.route("/", methods=['POST'])
-def test():
-    print request.form
-    return "OK"
-

@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.ndimage import gaussian_filter
 import cv2
 
 __author__ = 'marcos'
@@ -17,27 +18,26 @@ class PreProcessor(object):
         raise NotImplementedError()
 
 
-class GammaAdjustPreProcessor(PreProcessor):
+class GammaCorrectionPreProcessor(PreProcessor):
 
-    def __init__(self, image, gamma=1.0):
-        super(GammaAdjustPreProcessor, self).__init__(image)
+    def __init__(self, image, gamma=0.5):
+        super(GammaCorrectionPreProcessor, self).__init__(image)
         self.gamma = gamma
 
     def _process(self):
-        inverse_gamma = 1.0 / self.gamma
-        table = np.array([((i / 255.0) ** inverse_gamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
-        return cv2.LUT(self.image, table)
+        self.image = (self.image / 255.0)
+        self.image = cv2.pow(self.image, self.gamma)
+        return np.uint8(self.image * 255)
 
 
 class DifferenceOfGaussians(PreProcessor):
 
-    first_kernel = (2, 2)
-    second_kernel = (4, 4)
+    first_kernel = (1, 1)
+    second_kernel = (5, 5)
 
     def _process(self):
-        blur_1 = cv2.blur(self.image, self.first_kernel)
-        blur_2 = cv2.blur(self.image, self.second_kernel)
-
+        blur_1 = gaussian_filter(self.image, 0.25)
+        blur_2 = gaussian_filter(self.image, 2.0)
         return cv2.subtract(blur_1, blur_2)
 
 
@@ -49,8 +49,7 @@ class ContrastEqualizationPreProcessor(PreProcessor):
 
 class PreProcessingQueue(object):
 
-    _pre_processors = (GammaAdjustPreProcessor, DifferenceOfGaussians,
-                       ContrastEqualizationPreProcessor)
+    _pre_processors = (GammaCorrectionPreProcessor, DifferenceOfGaussians, ContrastEqualizationPreProcessor)
 
     def process(self, image):
         for pre_processor in self._pre_processors:

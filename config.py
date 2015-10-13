@@ -22,11 +22,5 @@ MONGODB_SETTINGS = {'DB': 'missed_faces'}
 
 
 # EMAIL
-MAIL_SERVER = "smtp.live.com"
-MAIL_PORT = 465
-# MAIL_USE_TLS = True
-MAIL_USE_SSL = True
-# MAIL_DEBUG : default app.debug
-MAIL_USERNAME = "kbca-sjc@hotmail.com"
-MAIL_PASSWORD = "m1a2r3c4o5s5"
+SENDGRID_API_KEY = "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"
 DEFAULT_MAIL_SENDER = "missedfaces@noreply.com"

@@ -1,10 +1,11 @@
-from flask.ext.mail import Message
 import requests
+import sendgrid
+
 from mongoengine import fields
 
-from application import mail
 from application.apps.auth.models import User
 from application.apps.base.models import BaseDocument
+from application import sg
 
 __author__ = 'marcos'
 
@@ -23,11 +24,11 @@ class EmailNotifier(Notifier):
     def notify(self, detection):
         print("sending email notification")
 
-        msg = Message(subject="Pessoa encontrada",
-                      recipients=[self.target],
-                      body=self.build_message_body(detection))
+        message = sendgrid.Mail(subject="Pessoa encontrada",
+                                recipients=[self.target],
+                                body=self.build_message_body(detection))
 
-        mail.send(msg)
+        sg.send(message)
 
     @staticmethod
     def build_message_body(detection):

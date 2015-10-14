@@ -5,3 +5,4 @@
 .idea
 
 application/static/.webassets-cache/
+application/static/bower_components/

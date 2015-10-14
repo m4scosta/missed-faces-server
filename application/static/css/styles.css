@@ -1,0 +1,22 @@
+.auth-links {
+    list-style-type: none;
+}
+
+.auth-links > li {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.main-container {
+    width: 940px;
+    padding: 20px;
+}
+
+.login-card {
+    margin-top: 30px;
+    width: 400px;
+}
+
+.login-form {
+    padding: 20px;
+}

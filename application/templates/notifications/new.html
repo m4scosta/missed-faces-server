@@ -1,18 +1,114 @@
-{% import '_forms.html' as forms %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login | Missed Faces</title>
-</head>
-<body>
+{% extends "base/base.html" %}
 
-<div>
-    <form action="{{ request.url }}" method="POST">
-        {{ forms.render(form) }}
-        <input type="submit" value="Adicionar"/>
-    </form>
-</div>
+{% block title %}
+    Notificações | Missed Faces
+{% endblock %}
 
-</body>
-</html>
+{% block extrahead %}
+    <link rel="import" href="/static/bower_components/paper-dropdown-menu/paper-dropdown-menu.html"/>
+    <link rel="import" href="/static/bower_components/paper-item/paper-item.html">
+    <link rel="import" href="/static/bower_components/paper-menu/paper-menu.html">
+    <style>
+        paper-menu {
+            display: block;
+        }
+
+        paper-dropdown-menu {
+            text-align: left;
+        {#            margin: auto;#}
+            width: 100%;
+        }
+
+        paper-menu-button {
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="vertical layout center">
+        <paper-card elevation="2" heading="Método de notificação" class="form-card">
+
+            <template id="Form" is="dom-bind">
+
+                <form is="iron-form" id="form" action="{{ request.url }}" method="POST" class="login-form">
+
+                    {{ form.csrf_token() }}
+
+                    <paper-dropdown-menu label="Tipo" noink>
+                        <paper-menu class="dropdown-content">
+                            <template is="dom-repeat" items="[[types]]" as="type">
+                                <paper-item onclick="setType(this)" value="[[type.value]]">[[type.label]]</paper-item>
+                            </template>
+                        </paper-menu>
+                    </paper-dropdown-menu>
+
+                    <paper-input disabled name="target" required="true" label="Destino" error-message="Obrigatório"></paper-input>
+
+                    <br>
+                    <div class="center">
+                        <paper-button raised class="primary" onclick="submitForm()">Adicionar</paper-button>
+                        <paper-button onclick="redirect('/notificacoes/')">Voltar</paper-button>
+                    </div>
+                </form>
+            </template>
+        </paper-card>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        Form.types = [
+            {value: "email", label: "E-mail"},
+            {value: "post", label: "Post em URL"}
+        ];
+
+        var type = null;
+
+        function setType(selected) {
+            type = selected.value;
+            var target = document.querySelector("paper-input[name=target]");
+
+            target.disabled = false;
+        }
+
+        function handleFormErrors(errors) {
+            var target = document.querySelector("paper-input[name=target]");
+
+            for (var prop in errors) {
+                if (errors.hasOwnProperty(prop)) {
+                    target.invalid = true;
+                    target.errorMessage = errors[prop];
+                    delete errors[prop];
+                }
+            }
+        }
+
+        function redirect(to) {
+            document.location = to;
+        }
+
+        function onSubmitSuccess(response) {
+            if (response.status === "error") {
+                handleFormErrors(response.errors);
+            } else {
+                redirect(response.next);
+            }
+        }
+
+        function submitForm() {
+            var target = document.querySelector("paper-input[name=target]");
+            var csrf_token = document.querySelector("[name=csrf_token]").value;
+
+            if (target.validate()) {
+                var $form = $("#form");
+                var formData = {
+                    "target": target.value,
+                    "notification_type": type,
+                    "csrf_token": csrf_token
+                };
+                $.post($form.attr('action'), formData).success(onSubmitSuccess);
+            }
+        }
+    </script>
+{% endblock %}

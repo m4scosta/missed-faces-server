@@ -1,20 +1,76 @@
-{% import '_forms.html' as forms %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{#{% import '_forms.html' as forms %}#}
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title></title>#}
+{#</head>#}
+{#<body>#}
+{##}
+{#{% for person in persons %}#}
+{#    <p>{{ person.name }}</p>#}
+{#{% endfor %}#}
+{##}
+{#<form action="." method="POST">#}
+{#    {{ forms.render(form) }}#}
+{#    <input type="submit" value="Send" />#}
+{#</form>#}
+{##}
+{#</body>#}
+{#</html>#}
+{##}
 
-{% for person in persons %}
-    <p>{{ person.name }}</p>
-{% endfor %}
+{% extends "base/base.html" %}
 
-<form action="." method="POST">
-    {{ forms.render(form) }}
-    <input type="submit" value="Send" />
-</form>
+{% block title %}
+    Notificações | Missed Faces
+{% endblock %}
 
-</body>
-</html>
+{% block extrahead %}
+    <link rel="import" href="/static/bower_components/paper-fab/paper-fab.html"/>
+    <link rel="import" href="/static/bower_components/paper-toast/paper-toast.html"/>
+{% endblock %}
+
+{% block content %}
+
+    <div class="vertical layout center">
+        <br/>
+
+        <paper-button href="{{ url_for("person.new_person") }}" raised class="primary" onclick="redirect(this)">Adicionar Desaparecido</paper-button>
+
+        {% for person in persons %}
+            <paper-card elevation="2" heading="{{ person.name }}" class="form-card">
+                <div style="padding: 0 15px 15px 15px">
+                    <p>Nascimento: {{ person.born_date.strftime('%d/%m/%Y') }}</p>
+                    <p>Desaparecimento: {{ person.missed_date.strftime('%d/%m/%Y') }}</p>
+
+                    {% for image in person.images %}
+                        <img src="{{ url_for("person.download_image", person_id=person.id, index=loop.index0) }}" alt="" />
+                    {% endfor %}
+
+                    <paper-fab mini icon="remove" title="remove" class="error" style="float: right; margin-bottom: 15px;" onclick="deleteMethod(this)" data-url="{{ url_for("person.delete_person", person_id=person.id) }}"></paper-fab>
+                </div>
+            </paper-card>
+        {% endfor %}
+    </div>
+
+    <paper-toast id="toast1" text="Removido com sucesso."></paper-toast>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function deleteMethod(el) {
+            var $el = $(el);
+            $.get($el.data("url")).success(function (response) {
+                if (response.status === "success") {
+                    $el.closest("paper-card").remove();
+                    document.querySelector("#toast1").show();
+                }
+            });
+        }
+
+        function redirect(el) {
+            document.location = $(el).attr("href");
+        }
+    </script>
+{% endblock %}

@@ -1,8 +1,8 @@
 from flask import Flask
 from flask import render_template
 from flask.ext.login import LoginManager
+
 from flask.ext.mongoengine import MongoEngine
-import sendgrid
 
 from application.email import SendGridMail
 from .apps.recognition.service import RecognitionService
@@ -10,6 +10,7 @@ from .assets import register_assets
 from .blueprints import register_blueprints
 from .tasks import setup_celery
 from .apps.person.util import train_recognizer_with_registered_persons
+
 
 
 # instantiate application

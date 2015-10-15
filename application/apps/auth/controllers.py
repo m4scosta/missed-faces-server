@@ -1,11 +1,8 @@
 from flask import Blueprint, redirect
-import flask
-
 from flask.ext.login import login_user, login_required, logout_user
-
 from flask.globals import request
 from flask.helpers import url_for
-
+from flask.json import jsonify
 from flask.templating import render_template
 
 from application.apps.auth.forms import SignInForm, LoginForm
@@ -33,24 +30,25 @@ def signin():
         user.save()
 
         login_user(user)
-        return redirect("/")
-    else:
-        print form.errors
+        return jsonify(status="success", next=url_for("index"))
 
-    return render_template("signin.html", form=form)
+    return jsonify(status="error", errors=form.errors)
 
 
 @auth_mod.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
 
+    if request.method == "GET":
+        return render_template("login.html", form=form)
+
     if request.method == "POST":
         if form.validate_on_submit():
             user = User.objects.get(email=form.data['email'])
             login_user(user)
-            return redirect(request.args.get('next') or url_for("index"))
 
-    return render_template("login.html", form=form)
+            return jsonify(status="success", next=(request.args.get('next') or url_for("index")))
+        return jsonify(status="error", errors=form.errors)
 
 
 @auth_mod.route("/logout", methods=['GET', 'POST'])

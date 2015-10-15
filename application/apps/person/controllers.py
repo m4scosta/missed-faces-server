@@ -1,6 +1,8 @@
-from flask import Blueprint, redirect
+from flask import Blueprint
 from flask import jsonify
 from flask import request
+from flask import redirect
+from flask import send_file
 from flask.ext.login import current_user, login_required
 from flask.helpers import url_for
 from flask.templating import render_template
@@ -11,6 +13,13 @@ from application.apps.recognition.task import TrainingTask
 from .models import MissedPerson
 
 person_mod = Blueprint('person', __name__, url_prefix='/desaparecidos')
+
+
+@person_mod.route("/", methods=['GET'])
+@login_required
+def index():
+    persons = MissedPerson.objects(user=current_user.id)
+    return render_template("person/list.html", persons=persons)
 
 
 @person_mod.route("/novo", methods=['GET', 'POST'])
@@ -45,7 +54,7 @@ def get_person(person_id):
     return jsonify(person=MissedPerson.objects.get_or_404(id=person_id))
 
 
-@person_mod.route("/<string:person_id>/", methods=['DELETE'])
+@person_mod.route("/delete/<string:person_id>/", methods=['get'])
 @login_required
 def delete_person(person_id):
     person = MissedPerson.objects.get_or_404(id=person_id)
@@ -53,4 +62,12 @@ def delete_person(person_id):
 
     del person.id
 
-    return jsonify(person=person)
+    return jsonify(status="success")
+
+
+@person_mod.route("/image/<string:person_id>/<int:index>/", methods=['GET'])
+@login_required
+def download_image(person_id, index):
+    person = MissedPerson.objects.get_or_404(id=person_id)
+    image = person.images[index]
+    return send_file(image.image)

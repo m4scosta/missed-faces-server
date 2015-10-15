@@ -1,32 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login | Missed Faces</title>
-</head>
-<body>
+{% extends "base/base.html" %}
 
-<a href="{{ url_for("index") }}">Home</a>
-<br/>
-<br/>
+{% block title %}
+    Notificações | Missed Faces
+{% endblock %}
 
-<ul>
-    {% for method in notification_methods %}
-        <li>
-            {% if method.notification_type == "email" %}
-                E-mail para {{ method.target }}
-            {% else %}
-                Post na URL {{ method.target }}
-            {% endif %}
+{% block extrahead %}
+    <link rel="import" href="/static/bower_components/paper-fab/paper-fab.html"/>
+    <link rel="import" href="/static/bower_components/paper-toast/paper-toast.html"/>
+{% endblock %}
 
-            <a href="{{ url_for("notifications.delete", notification_id=method.id) }}">Deletar</a>
-        </li>
-    {% endfor %}
-</ul>
+{% block content %}
 
-<div>
-    <a href="./nova">Adicionar método de notificação</a>
-</div>
+    <div class="vertical layout center">
+        <br/>
 
-</body>
-</html>
+        <paper-button href="{{ url_for("notifications.new") }}" raised class="primary" onclick="redirect(this)">Adicionar Notificação</paper-button>
+
+        {% for method in notification_methods %}
+            <paper-card id="method_{{ method.id }}" elevation="2" heading="{{ label(method.notification_type) }}" class="form-card">
+                <div style="padding: 0 15px 15px 15px">
+                    <span>{{ method.target }}</span>
+                    <paper-fab mini icon="remove" title="remove" class="error" style="float: right; margin-bottom: 15px;" onclick="deleteMethod(this)" data-url="{{ url_for("notifications.delete", notification_id=method.id) }}"></paper-fab>
+                </div>
+            </paper-card>
+        {% endfor %}
+    </div>
+
+    <paper-toast id="toast1" text="Removido com sucesso."></paper-toast>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function deleteMethod(el) {
+            var $el = $(el);
+            $.get($el.data("url")).success(function (response) {
+                if (response.status === "success") {
+                    $el.closest("paper-card").remove();
+                    document.querySelector("#toast1").show();
+                }
+            });
+        }
+
+        function redirect(el) {
+            document.location = $(el).attr("href");
+        }
+    </script>
+{% endblock %}
+
+{% macro label(type) -%}
+    {% if type == "email" %}
+        E-mail
+    {% else %}
+        Post
+    {% endif %}
+{% endmacro %}

@@ -29,7 +29,7 @@ class EmailNotifier(Notifier):
                                 recipients=[self.target],
                                 from_email=app.config["DEFAULT_MAIL_SENDER"],
                                 html=self.build_message_body(detection),
-                                body=self.build_message_body(detection))
+                                body="Teste")
 
         print sg.send(message)
         print "email sent to {}".format(self.target)

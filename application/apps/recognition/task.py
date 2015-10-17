@@ -27,6 +27,7 @@ class RecognitionTask(BaseTask):
 
         if person is not None:
             detection.person = person
+            detection.user = person.user
             detection.save()
             return detection
 

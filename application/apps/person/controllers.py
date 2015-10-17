@@ -37,7 +37,7 @@ def new_person():
 
         TrainingTask().apply_async((person, ))
 
-        return redirect(url_for("person.list_person"))
+        return redirect(url_for("person.index"))
 
     return render_template("person/create.html", form=form)
 

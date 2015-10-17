@@ -40,7 +40,3 @@ train_recognizer_with_registered_persons()
 def not_found(error):
     return render_template('404.html', error=error), 404
 
-
-@app.route("/")
-def index():
-    return render_template("index.html")

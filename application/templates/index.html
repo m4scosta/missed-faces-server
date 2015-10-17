@@ -14,10 +14,13 @@
     <link rel="import" href="/static/bower_components/paper-icon-button/paper-icon-button.html">
     <link rel="import" href="/static/bower_components/paper-card/paper-card.html">
     <link rel="import" href="/static/bower_components/paper-material/paper-material.html">
+    <link rel="import" href="/static/bower_components/paper-fab/paper-fab.html">
 
     <link rel="import" href="/static/bower_components/iron-icons/iron-icons.html">
     <link rel="import" href="/static/bower_components/iron-icons/social-icons.html">
+    <link rel="import" href="/static/bower_components/iron-icons/communication-icons.html">
     <link rel="import" href="/static/bower_components/iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="/static/bower_components/iron-icon/iron-icon.html">
 
     <link rel="import" href="/static/bower_components/font-roboto/roboto.html">
 
@@ -31,6 +34,17 @@
             Helvetica, Arial, sans-serif;
             margin: 0;
             height: 100vh;
+        }
+
+        paper-card {
+            padding: 20px;
+            margin: 20px;
+            width: 300px;
+            height: 150px;
+        }
+
+        h2.title {
+            margin-top: 0;
         }
     </style>
 </head>
@@ -51,19 +65,49 @@
     </paper-toolbar>
 
     <div class="vertical layout center">
-        <paper-material elevation="2" class="main-container">
-            <a href="{{ url_for('person.index') }}">Desaparecidos</a>
-            <br/>
 
-            <a href="#">Encontrados</a>
-            <br/>
+        <div class="horizontal layout center">
+            <paper-card heading="Desaparecidos" >
+                <div class="horizontal layout center" style="color: #03a9f4;">
+                    <p class="flex">
+                        <iron-icon icon="social:mood-bad"></iron-icon>
+                        &nbsp; {{ person_count }} cadastrado{% if person_count > 1 %}s{% endif %}
+                    </p>
+                    <paper-icon-button icon="arrow-forward" onclick="redirect('{{ url_for('person.index') }}')"></paper-icon-button>
+                </div>
+            </paper-card>
 
-            <a href="{{ url_for('notifications.list_notification_methods') }}">Métodos de notificação</a>
-            <br/>
-        </paper-material>
+            <paper-card heading="Encontrados">
+                <div class="horizontal layout center" style="color: #03a9f4;">
+                    <p class="flex">
+                        <iron-icon icon="social:mood"></iron-icon>
+                        &nbsp; {{ not_seen }} não visualizados
+                    </p>
+
+                    <paper-icon-button icon="arrow-forward" onclick="redirect('{{ url_for('person.index') }}')"></paper-icon-button>
+                </div>
+            </paper-card>
+
+            <paper-card heading="Notificações">
+                <div class="horizontal layout center" style="color: #03a9f4;">
+                    <p class="flex">
+                        <iron-icon icon="communication:email"></iron-icon>
+                        &nbsp; {{ notification_count }} cadastrado{% if person_count > 1 %}s{% endif %}
+                    </p>
+                    <paper-icon-button icon="arrow-forward" onclick="redirect('{{ url_for('notifications.list_notification_methods') }}')"></paper-icon-button>
+                </div>
+            </paper-card>
+        </div>
     </div>
 
 </paper-header-panel>
+
+
+<script>
+    function redirect(url) {
+        window.location = url;
+    }
+</script>
 
 </body>
 </html>

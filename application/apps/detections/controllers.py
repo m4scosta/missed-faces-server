@@ -7,6 +7,9 @@ from PIL import Image
 from flask import Blueprint
 from flask import jsonify
 from flask import request
+from flask.ext.login import login_required, current_user
+from flask.helpers import send_file
+from flask.templating import render_template
 
 from application.apps.detections.models import Detection
 from application.apps.notifications.tasks import NotificationTask
@@ -32,8 +35,11 @@ def create_detection():
     detection_data = request.get_json()
 
     faces = [load_io_image(face) for face in detection_data['faces']]
-    detection = Detection(time=datetime.fromtimestamp(detection_data['time'] / 1e3), face=faces[0])
-    # detection.save()
+    detection = Detection(
+        time=datetime.fromtimestamp(detection_data['time'] / 1e3),
+        latitude=detection_data['latitude'],
+        longitude=detection_data['longitude'],
+        face=faces[0])
 
     RecognitionTask().apply_async((detection, ), link=NotificationTask().s())
 
@@ -59,3 +65,19 @@ def delete_detection(detection_id):
     del detection.id
 
     return jsonify(detection=detection)
+
+
+@detection_mod.route("/encontrados/<string:detection_id>", methods=['GET'])
+@login_required
+def get(detection_id):
+    detection = Detection.objects.get_or_404(id=detection_id)
+    detection.seen = True
+    detection.save()
+    return render_template("/detections/show.html", detection=detection)
+
+
+@detection_mod.route("/download_face/<string:detection_id>", methods=['GET'])
+@login_required
+def download_face(detection_id):
+    detection = Detection.objects.get_or_404(id=detection_id)
+    return send_file(detection.face)

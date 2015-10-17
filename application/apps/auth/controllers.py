@@ -30,7 +30,7 @@ def signin():
         user.save()
 
         login_user(user)
-        return jsonify(status="success", next=url_for("index"))
+        return jsonify(status="success", next=url_for("home.index"))
 
     return jsonify(status="error", errors=form.errors)
 
@@ -47,7 +47,7 @@ def login():
             user = User.objects.get(email=form.data['email'])
             login_user(user)
 
-            return jsonify(status="success", next=(request.args.get('next') or url_for("index")))
+            return jsonify(status="success", next=(request.args.get('next') or url_for("home.index")))
         return jsonify(status="error", errors=form.errors)
 
 

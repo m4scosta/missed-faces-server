@@ -1,0 +1,55 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+    Encontrados | Missed Faces
+{% endblock %}
+
+{% block extrahead %}
+    <style>
+        .form-card {
+            width: 450px;
+        }
+
+        .form-card[seen=True] {
+            background-color: seashell;
+        }
+
+        .icon {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="vertical layout center">
+        <br/>
+
+        {% for detection in detections %}
+            <paper-card elevation="2" heading="{{ detection.person.name }}" class="form-card" seen="{{ detection.seen }}">
+                {% if detection.seen %}
+                    <iron-icon class="icon" icon="done-all" style="color: #00c853;"></iron-icon>
+                {% endif %}
+                <div style="padding: 0 15px 15px 15px">
+                    <p>Horário: {{ detection.time.strftime('%d/%m/%Y %H:%M:%S') }}</p>
+                    <p>Local: {{ detection.latitude }}(latitude), {{ detection.longitude }}(longitude)</p>
+
+                    <div class="horizontal layout center">
+                        <paper-button raised class="primary flex" onclick="redirect('{{ url_for("detection.get", detection_id=detection.id) }}')">
+                            Ver no mapa <iron-icon icon="arrow-forward"></iron-icon>
+                        </paper-button>
+                    </div>
+                </div>
+            </paper-card>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function redirect(to) {
+            document.location = to;
+        }
+    </script>
+{% endblock %}

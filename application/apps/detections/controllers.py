@@ -15,7 +15,7 @@ from application.apps.detections.models import Detection
 from application.apps.notifications.tasks import NotificationTask
 from application.apps.recognition.task import RecognitionTask
 
-detection_mod = Blueprint('detection', __name__, url_prefix='/detection')
+detection_mod = Blueprint('detection', __name__, url_prefix='')
 
 def load_pil_image(face):
     size = (face['width'], face['height'])
@@ -30,7 +30,7 @@ def load_io_image(face):
 
     return output
 
-@detection_mod.route("", methods=['POST'])
+@detection_mod.route("/detection", methods=['POST'])
 def create_detection():
     detection_data = request.get_json()
 
@@ -46,18 +46,21 @@ def create_detection():
     return jsonify(detection=detection)
 
 
-@detection_mod.route("/list", methods=['GET'])
+@detection_mod.route("/detection/list", methods=['GET'])
+@login_required
 def list_detection():
     return jsonify(detections=Detection.objects.all())
 
 
-@detection_mod.route("/<string:detection_id>", methods=['GET'])
+@detection_mod.route("/detection/<string:detection_id>", methods=['GET'])
+@login_required
 def get_detection(detection_id):
     p = Detection.objects.get_or_404(id=detection_id).delete()
     return jsonify(detection=p)
 
 
-@detection_mod.route("/<string:detection_id>", methods=['DELETE'])
+@detection_mod.route("/detection/<string:detection_id>", methods=['DELETE'])
+@login_required
 def delete_detection(detection_id):
     detection = Detection.objects.get_or_404(id=detection_id)
     detection.delete()
@@ -67,16 +70,23 @@ def delete_detection(detection_id):
     return jsonify(detection=detection)
 
 
+@detection_mod.route("/encontrados", methods=['GET'])
+@login_required
+def index():
+    detections = Detection.objects(user=current_user.id)
+    return render_template("detections/list.html", detections=detections)
+
+
 @detection_mod.route("/encontrados/<string:detection_id>", methods=['GET'])
 @login_required
 def get(detection_id):
-    detection = Detection.objects.get_or_404(id=detection_id)
+    detection = Detection.objects.get_or_404(id=detection_id, user=current_user.id)
     detection.seen = True
     detection.save()
     return render_template("detections/show.html", detection=detection)
 
 
-@detection_mod.route("/download_face/<string:detection_id>", methods=['GET'])
+@detection_mod.route("/encontrados/download_face/<string:detection_id>", methods=['GET'])
 @login_required
 def download_face(detection_id):
     detection = Detection.objects.get_or_404(id=detection_id)

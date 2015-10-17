@@ -14,7 +14,7 @@ def index():
     person_count = MissedPerson.objects(user=current_user.id).count()
     notification_count = NotificationMethod.objects(user=current_user.id).count()
 
-    not_seen = Detection.objects(user=current_user.id).count()
+    not_seen = Detection.objects(user=current_user.id, seen=False).count()
     return render_template("index.html",
                            person_count=person_count,
                            notification_count=notification_count,

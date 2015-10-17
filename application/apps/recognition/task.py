@@ -50,7 +50,7 @@ class TrainingTask(BaseTask):
         return missed_person
 
     def train_recognizer(self, missed_person):
-        raw_images = map(read_image_as_np_array, missed_person.images)
+        raw_images = [read_image_as_np_array(img.image) for img in missed_person.images]
         images = np.asarray([self.pre_process(img) for img in raw_images])
         labels = np.asarray([missed_person.counter] * len(missed_person.images))
 

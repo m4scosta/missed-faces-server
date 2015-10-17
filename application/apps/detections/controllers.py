@@ -73,7 +73,7 @@ def get(detection_id):
     detection = Detection.objects.get_or_404(id=detection_id)
     detection.seen = True
     detection.save()
-    return render_template("/detections/show.html", detection=detection)
+    return render_template("detections/show.html", detection=detection)
 
 
 @detection_mod.route("/download_face/<string:detection_id>", methods=['GET'])

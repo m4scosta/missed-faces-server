@@ -22,7 +22,7 @@ class Detection(BaseDocument):
     seen = fields.BooleanField(default=False)
 
     def get_absolute_url(self):
-        return url_for('detection', kwargs={'detection_id': self.id})
+        return url_for('detection.get', detection_id=self.id)
 
     def __unicode__(self):
         return "Detection {}".format(self.received_at)

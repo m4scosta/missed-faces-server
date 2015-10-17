@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="margin: 0; padding: 0;">
+
+<table cellpadding="0" cellspacing="0" width="80%">
+    <tr>
+        <td>
+            {{ detection.person.name }} foi encontrado(a)!!!!
+        </td>
+    </tr>
+
+    <tr><td></td></tr>
+
+    <tr>
+        <td>
+            <p>O Missed Faces tem o prazer de te informar que uma pessoa que você busca foi encontrada.</p>
+            <p>Visualize a localização em nosso site <a href="{{ detection.get_absolute_url() }}">clicando aqui</a>.</p>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <p>Atenciosamente,</p>
+            <p>Equipe Missed Faces</p>
+            <p><a href="{{ request.host }}">www.missedfaces.com</a></p>
+        </td>
+    </tr>
+
+</table>
+
+</body>
+</html>

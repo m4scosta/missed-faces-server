@@ -1,8 +1,10 @@
+from flask.templating import render_template_string
 import requests
 import sendgrid
 
 from mongoengine import fields
 
+from application import app
 from application.apps.auth.models import User
 from application.apps.base.models import BaseDocument
 from application import sg
@@ -23,17 +25,19 @@ class EmailNotifier(Notifier):
 
     def notify(self, detection):
         print("sending email notification")
-
         message = sendgrid.Mail(subject="Pessoa encontrada",
                                 recipients=[self.target],
+                                from_email=app.config["DEFAULT_MAIL_SENDER"],
+                                html=self.build_message_body(detection),
                                 body=self.build_message_body(detection))
 
-        sg.send(message)
+        print sg.send(message)
+        print "email sent to {}".format(self.target)
 
     @staticmethod
     def build_message_body(detection):
-        return "OI"
-
+        return render_template_string("email/person_found.html",
+                                      detection=detection)
 
 
 class URLPostNotifier(Notifier):
